@@ -43,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           </li>
           <li>
             <a
-              href="/blog"
+              href="/posts"
               className="block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               Blog
