@@ -1,58 +1,85 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useAnimation } from '@/providers/AnimationContext'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 type SidebarProps = {
   className?: string
+  onToggle?: (isOpen: boolean) => void
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
-  const [isOpen, setIsOpen] = useState(true)
+export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
+  // Utiliser notre hook personnalisé pour persister l'état de la sidebar
+  const [isOpen, setIsOpen] = useLocalStorage<boolean>('sidebarOpen', true)
+  // Utiliser le contexte d'animation
+  const { shouldAnimate, isPageTransitioning } = useAnimation()
+  // Obtenir le chemin actuel pour mettre en évidence le lien actif
+  const pathname = usePathname()
+
+  // Call the onToggle callback when isOpen changes
+  useEffect(() => {
+    if (onToggle) {
+      onToggle(isOpen)
+    }
+  }, [isOpen, onToggle])
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen)
+  }
+
+  // Classes pour les animations
+  const transitionClass =
+    shouldAnimate && !isPageTransitioning
+      ? 'transition-all duration-300 ease-in-out'
+      : 'transition-none'
+
+  // Fonction pour déterminer si un lien est actif
+  const isLinkActive = (href: string) => {
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
+
+  // Classe pour les liens actifs
+  const activeLinkClass = 'text-blue-600 dark:text-blue-400 font-medium'
+  const linkClass =
+    'block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
 
   return (
     <div className="relative">
-      {/* Bouton de toggle qui reste visible même quand la sidebar est fermée */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`absolute z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
-                   flex items-center justify-center transition-all duration-300 ease-in-out
-                   ${isOpen ? 'right-4 top-4' : 'left-4 top-4'}`}
-        aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-      >
-        {isOpen ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-700 dark:text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-700 dark:text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        )}
-      </button>
-
-      {/* Sidebar avec animation */}
+      {/* Sidebar avec animation conditionnelle */}
       <aside
-        className={`h-screen bg-gray-100 dark:bg-gray-800 flex flex-col transition-all duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-screen bg-gray-100 dark:bg-gray-800 flex flex-col ${transitionClass}
                    ${isOpen ? 'w-96 opacity-100' : 'w-0 opacity-0 overflow-hidden'} 
                    ${className}`}
       >
+        {/* Bouton de fermeture à l'intérieur de la sidebar quand elle est ouverte */}
+        {isOpen && (
+          <button
+            onClick={toggleSidebar}
+            className={`absolute z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
+                     flex items-center justify-center ${transitionClass}
+                     right-4 top-4`}
+            aria-label="Fermer le menu"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-700 dark:text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
+
         <nav className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="mb-4 flex items-center space-x-4">
             <img src="/images/logo-mbn.png" alt="Logo" className="h-12 w-12" />
@@ -64,44 +91,49 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           </div>
           <ul className="space-y-2">
             <li>
-              <a
+              <Link
                 href="/services"
-                className="block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className={isLinkActive('/services') ? activeLinkClass : linkClass}
+                prefetch={true}
               >
                 Services
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/a-propos"
-                className="block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className={isLinkActive('/a-propos') ? activeLinkClass : linkClass}
+                prefetch={true}
               >
                 À propos
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/cas-etude"
-                className="block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className={isLinkActive('/cas-etude') ? activeLinkClass : linkClass}
+                prefetch={true}
               >
                 Cas d'étude
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/posts"
-                className="block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className={isLinkActive('/posts') ? activeLinkClass : linkClass}
+                prefetch={true}
               >
                 Blog
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/contact"
-                className="block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className={isLinkActive('/contact') ? activeLinkClass : linkClass}
+                prefetch={true}
               >
                 Me contacter
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -114,6 +146,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           </div>
         </div>
       </aside>
+
+      {/* Bouton d'ouverture visible uniquement quand la sidebar est fermée */}
+      {!isOpen && (
+        <button
+          onClick={toggleSidebar}
+          className={`fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
+                   flex items-center justify-center ${transitionClass}
+                   left-4 top-4`}
+          aria-label="Ouvrir le menu"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-gray-700 dark:text-gray-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
     </div>
   )
 }
