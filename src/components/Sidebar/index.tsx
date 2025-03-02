@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useAnimation } from '@/providers/AnimationContext'
 import Link from 'next/link'
@@ -19,16 +19,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
   // Obtenir le chemin actuel pour mettre en évidence le lien actif
   const pathname = usePathname()
 
+  // Mémoriser la fonction de toggle pour éviter les re-rendus inutiles
+  const toggleSidebar = useCallback(() => {
+    setIsOpen(!isOpen)
+  }, [isOpen, setIsOpen])
+
   // Call the onToggle callback when isOpen changes
   useEffect(() => {
     if (onToggle) {
       onToggle(isOpen)
     }
   }, [isOpen, onToggle])
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen)
-  }
 
   // Classes pour les animations
   const transitionClass =
@@ -37,14 +38,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
       : 'transition-none'
 
   // Fonction pour déterminer si un lien est actif
-  const isLinkActive = (href: string) => {
-    return pathname === href || pathname.startsWith(`${href}/`)
-  }
+  const isLinkActive = useCallback(
+    (href: string) => {
+      return pathname === href || pathname.startsWith(`${href}/`)
+    },
+    [pathname],
+  )
 
   // Classe pour les liens actifs
   const activeLinkClass = 'text-blue-600 dark:text-blue-400 font-medium'
   const linkClass =
     'block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
+
+  // Liens de navigation
+  const navLinks = [
+    { href: '/services', label: 'Services' },
+    { href: '/a-propos', label: 'À propos' },
+    { href: '/cas-etude', label: "Cas d'étude" },
+    { href: '/posts', label: 'Blog' },
+    { href: '/contact', label: 'Me contacter' },
+  ]
 
   return (
     <div className="relative">
@@ -90,51 +103,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
             </h1>
           </div>
           <ul className="space-y-2">
-            <li>
-              <Link
-                href="/services"
-                className={isLinkActive('/services') ? activeLinkClass : linkClass}
-                prefetch={true}
-              >
-                Services
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/a-propos"
-                className={isLinkActive('/a-propos') ? activeLinkClass : linkClass}
-                prefetch={true}
-              >
-                À propos
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/cas-etude"
-                className={isLinkActive('/cas-etude') ? activeLinkClass : linkClass}
-                prefetch={true}
-              >
-                Cas d'étude
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/posts"
-                className={isLinkActive('/posts') ? activeLinkClass : linkClass}
-                prefetch={true}
-              >
-                Blog
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/contact"
-                className={isLinkActive('/contact') ? activeLinkClass : linkClass}
-                prefetch={true}
-              >
-                Me contacter
-              </Link>
-            </li>
+            {navLinks.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={isLinkActive(href) ? activeLinkClass : linkClass}
+                  prefetch={true}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 

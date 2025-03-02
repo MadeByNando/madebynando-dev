@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useCallback, memo } from 'react'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { useAnimation } from '@/providers/AnimationContext'
 import Link from 'next/link'
@@ -10,16 +10,17 @@ type SidebarHeaderProps = {
   isVisible: boolean
 }
 
-export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isVisible }) => {
+// Utiliser memo pour éviter les re-rendus inutiles
+export const SidebarHeader: React.FC<SidebarHeaderProps> = memo(({ isVisible }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   // Utiliser le contexte d'animation
   const { shouldAnimate, isPageTransitioning } = useAnimation()
   // Obtenir le chemin actuel pour mettre en évidence le lien actif
   const pathname = usePathname()
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen)
-  }
+  const toggleMenu = useCallback(() => {
+    setMenuOpen((prev) => !prev)
+  }, [])
 
   // Classes pour les animations
   const transitionClass =
@@ -31,9 +32,12 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isVisible }) => {
   const visibilityClasses = isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
 
   // Fonction pour déterminer si un lien est actif
-  const isLinkActive = (href: string) => {
-    return pathname === href || pathname.startsWith(`${href}/`)
-  }
+  const isLinkActive = useCallback(
+    (href: string) => {
+      return pathname === href || pathname.startsWith(`${href}/`)
+    },
+    [pathname],
+  )
 
   // Classe pour les liens actifs
   const activeLinkClass = 'text-blue-600 dark:text-blue-400 font-medium'
@@ -42,6 +46,15 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isVisible }) => {
   const mobileLinkClass =
     'block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
   const mobileActiveLinkClass = 'block py-1 text-blue-600 dark:text-blue-400 font-medium'
+
+  // Liens de navigation
+  const navLinks = [
+    { href: '/services', label: 'Services' },
+    { href: '/a-propos', label: 'À propos' },
+    { href: '/cas-etude', label: "Cas d'étude" },
+    { href: '/posts', label: 'Blog' },
+    { href: '/contact', label: 'Me contacter' },
+  ]
 
   return (
     <header
@@ -81,51 +94,17 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isVisible }) => {
         <div className="hidden md:flex items-center space-x-6">
           <nav>
             <ul className="flex space-x-6">
-              <li>
-                <Link
-                  href="/services"
-                  className={isLinkActive('/services') ? activeLinkClass : linkClass}
-                  prefetch={true}
-                >
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/a-propos"
-                  className={isLinkActive('/a-propos') ? activeLinkClass : linkClass}
-                  prefetch={true}
-                >
-                  À propos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/cas-etude"
-                  className={isLinkActive('/cas-etude') ? activeLinkClass : linkClass}
-                  prefetch={true}
-                >
-                  Cas d'étude
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/posts"
-                  className={isLinkActive('/posts') ? activeLinkClass : linkClass}
-                  prefetch={true}
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className={isLinkActive('/contact') ? activeLinkClass : linkClass}
-                  prefetch={true}
-                >
-                  Me contacter
-                </Link>
-              </li>
+              {navLinks.map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={isLinkActive(href) ? activeLinkClass : linkClass}
+                    prefetch={true}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
           <ThemeSelector />
@@ -137,51 +116,17 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isVisible }) => {
         <div className="md:hidden mt-4 py-2 border-t border-gray-200 dark:border-gray-700">
           <nav>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/services"
-                  className={isLinkActive('/services') ? mobileActiveLinkClass : mobileLinkClass}
-                  prefetch={true}
-                >
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/a-propos"
-                  className={isLinkActive('/a-propos') ? mobileActiveLinkClass : mobileLinkClass}
-                  prefetch={true}
-                >
-                  À propos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/cas-etude"
-                  className={isLinkActive('/cas-etude') ? mobileActiveLinkClass : mobileLinkClass}
-                  prefetch={true}
-                >
-                  Cas d'étude
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/posts"
-                  className={isLinkActive('/posts') ? mobileActiveLinkClass : mobileLinkClass}
-                  prefetch={true}
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className={isLinkActive('/contact') ? mobileActiveLinkClass : mobileLinkClass}
-                  prefetch={true}
-                >
-                  Me contacter
-                </Link>
-              </li>
+              {navLinks.map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={isLinkActive(href) ? mobileActiveLinkClass : mobileLinkClass}
+                    prefetch={true}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
           <div className="mt-4 pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -191,4 +136,4 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isVisible }) => {
       )}
     </header>
   )
-}
+})

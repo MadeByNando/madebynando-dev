@@ -1,6 +1,14 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 type AnimationContextType = {
@@ -24,6 +32,12 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }
   const [isPageTransitioning, setIsPageTransitioning] = useState(true)
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  // Créer une clé de dépendance pour détecter les changements de route
+  // Cela évite de créer un nouvel objet à chaque rendu
+  const routeKey = useMemo(() => {
+    return `${pathname}?${searchParams?.toString() || ''}`
+  }, [pathname, searchParams])
 
   // Désactiver les animations lors du chargement initial
   useEffect(() => {
@@ -49,11 +63,16 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }
 
       return () => clearTimeout(timer)
     }
-  }, [pathname, searchParams, isPageTransitioning])
+  }, [routeKey, isPageTransitioning])
 
-  return (
-    <AnimationContext.Provider value={{ shouldAnimate, isPageTransitioning }}>
-      {children}
-    </AnimationContext.Provider>
+  // Mémoriser la valeur du contexte pour éviter les re-rendus inutiles
+  const contextValue = useMemo(
+    () => ({
+      shouldAnimate,
+      isPageTransitioning,
+    }),
+    [shouldAnimate, isPageTransitioning],
   )
+
+  return <AnimationContext.Provider value={contextValue}>{children}</AnimationContext.Provider>
 }

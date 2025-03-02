@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback, memo } from 'react'
 import { Sidebar } from '../../Sidebar'
 import { SidebarHeader } from '../../SidebarHeader'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
@@ -11,7 +11,8 @@ type SidebarLayoutProps = {
   children: React.ReactNode
 }
 
-export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
+// Utiliser memo pour éviter les re-rendus inutiles
+export const SidebarLayout: React.FC<SidebarLayoutProps> = memo(({ children }) => {
   // Utiliser notre hook personnalisé pour persister l'état de la sidebar
   const [sidebarOpen, setSidebarOpen] = useLocalStorage<boolean>('sidebarOpen', true)
   const pathname = usePathname()
@@ -23,9 +24,13 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
     // sans déclencher de logique supplémentaire
   }, [pathname])
 
-  const handleSidebarToggle = (isOpen: boolean) => {
-    setSidebarOpen(isOpen)
-  }
+  // Mémoriser la fonction de callback pour éviter les re-rendus inutiles
+  const handleSidebarToggle = useCallback(
+    (isOpen: boolean) => {
+      setSidebarOpen(isOpen)
+    },
+    [setSidebarOpen],
+  )
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -51,10 +56,11 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
       <main className="flex-1 overflow-auto w-full h-full pt-2 pl-2 pr-2">
         <div
           className={`transition-all duration-300 ease-in-out ${sidebarOpen ? 'ml-96' : 'ml-0'}`}
+          style={{ minHeight: 'calc(100vh - 1rem)' }}
         >
           {children}
         </div>
       </main>
     </div>
   )
-}
+})
