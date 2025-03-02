@@ -6,7 +6,7 @@ type SidebarProps = {
 
 export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   return (
-    <aside className={`h-screen w-64 bg-gray-100 dark:bg-gray-800 flex flex-col ${className}`}>
+    <aside className={`h-screen w-96 bg-gray-100 dark:bg-gray-800 flex flex-col ${className}`}>
       <nav className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="mb-4 flex items-center space-x-4">
           <img src="/images/logo-mbn.png" alt="Logo" className="h-12 w-12" />
