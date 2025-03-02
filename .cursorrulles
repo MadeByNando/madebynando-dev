@@ -2,53 +2,8 @@
 
 ## Description du projet
 
-Il s'agit d'un site vitrine avec une partie portfolio et un blog pour mon activité de consultant en solutions d'intelligence artificielle.
+Il s'agit d'un site vitrine avec une partie portfolio et un blog pour mon activité de développeur web freelance.
 
-## Règles de codage et conventions
+## Guidelines
 
-- Utiliser **TypeScript strict** pour garantir la sécurité des types.
-- Appliquer **ESLint** et **Prettier** pour un code formaté et homogène.
-- Respecter la convention de nommage **camelCase** pour les variables et fonctions.
-- Utiliser **PascalCase** pour les noms de composants React.
-- Toujours typer les props des composants avec `React.FC<Props>` et éviter `any`.
-
-## Organisation du projet
-
-- Suivre une structure modulaire avec des dossiers bien définis :
-  - `**components/**` : Composants réutilisables
-  - `**pages/**` : Pages Next.js (ou `app/` selon la version de Next.js utilisée)
-  - `**hooks/**` : Hooks personnalisés pour gérer les états et interactions
-  - `**utils/**` : Fonctions utilitaires générales
-  - `**payload/**` : Configuration spécifique à Payload CMS, incluant les collections et champs
-- Utiliser l'approche de routage intégrée de Next.js, compatible avec Payload CMS.
-- Stocker les variables d'environnement dans un fichier **.env.local** et ne jamais les commit.
-
-## Directives d'architecture et bonnes pratiques
-
-- Tirer parti de l'intégration native de Payload avec **Next.js App Router**.
-- Utiliser les **Server Components** pour optimiser le rendu des données de Payload.
-- Pour la gestion d'état côté client, utiliser **React Context** ou **Zustand** si nécessaire.
-- Exploiter les **API Routes** de Next.js pour les fonctionnalités non couvertes par l'API Payload.
-- Utiliser l'API Admin de Payload pour les opérations d'administration.
-
-## Intégration avec Payload CMS et PostgreSQL
-
-- Utiliser le package `@payloadcms/db-postgres` pour intéragir avec PostgreSQL.
-- Structurer les collections Payload selon la documentation officielle.
-- Utiliser les relations natives de Payload (`relationship` field type) pour gérer les associations entre entités.
-- Configurer correctement les options `hooks` et `access` de Payload pour optimiser les performances.
-- Utiliser le système de permissions intégré de Payload pour sécuriser les endpoints.
-
-## Sécurité et optimisation
-
-- Utiliser le système d'authentification intégré de Payload.
-- Configurer les validations de champs dans les collections Payload pour assainir les entrées utilisateur.
-- Activer les **headers de sécurité** et configurer CORS via les options de Payload.
-- Utiliser les outils de monitoring compatibles avec Next.js pour surveiller les performances.
-
-## Évolutivité et mises à jour
-
-- Maintenir un fichier `README.md` à jour pour documenter les bonnes pratiques du projet.
-- S'assurer que les dépendances sont régulièrement mises à jour, particulièrement Payload.
-- Utiliser les migrations de base de données fournies par Payload pour PostgreSQL.
-- Configurer des workflows CI/CD adaptés à l'écosystème Payload/Next.js.
+Ce projet utilise Next.js et le framework Payload, configuré avec PostgreSQL. Il est essentiel de toujours respecter les recommandations et meilleures pratiques liées à cette stack technique pour garantir la performance, la sécurité et la maintenabilité du site.
