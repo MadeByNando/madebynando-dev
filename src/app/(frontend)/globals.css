@@ -101,3 +101,32 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+/* Styles pour le layout avec sidebar */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Assurer que le contenu principal s'adapte correctement */
+main {
+  height: 100%;
+  width: 100%;
+}
+
+/* Styles pour les articles dans le contenu principal */
+main article {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* Ajuster la barre d'administration pour qu'elle n'interfère pas avec le layout */
+.payload-admin-bar {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  z-index: 50;
+}
