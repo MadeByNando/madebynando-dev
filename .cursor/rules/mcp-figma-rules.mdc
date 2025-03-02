@@ -1,0 +1,9 @@
+---
+description: Utiliser la commande "get_node" par défaut pour le serveur mcp "mcp-figma-server".
+globs: 
+alwaysApply: false
+---
+
+# MCP Figma Server
+
+Quand tu utilises le serveur mcp "mcp-figma-server", utilise la commande "get_node" par défaut à moins que je ne te précise moi-même d'utiliser une autre commande.

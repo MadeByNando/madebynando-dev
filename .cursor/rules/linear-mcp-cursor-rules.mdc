@@ -1,0 +1,19 @@
+---
+description: Quand le serveur MCP "linear-mcp-server" doit être utilisé, l'agent utilisera automatiquement le nom de team "Madebynando" et appliquera automatiquement ces règles.
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+## En cas de création d'une issue unique
+- Il utilisera l'outil "linear_list_projects" pour récupérer la liste des projets disponibles avec leur ID.
+- Il enverra alors à l'utilisateur la liste ordonnée de ces projets pour lui demander lequel créer l'issue
+- Il utilisera l'outil "linear_get_workflow_states" pour récupérer la liste des statuts disponibles avec leur ID
+- Il enverra alors à l'utilisateur la liste ordonnée de ces status pour lui demander lequel attribuer à l'issue 
+- il enverra bien tous les champs suivants lors de la création :
+    - "title"
+    - "description"
+    - "teamId"
+    - "projectId"
+    - "stateId"
