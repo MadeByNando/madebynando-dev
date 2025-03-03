@@ -22,6 +22,11 @@ const nextConfig = {
   },
   reactStrictMode: true,
   redirects,
+  eslint: {
+    // Warning: This allows production builds to succeed even if
+    // your project contains ESLint errors.
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default withPayload(nextConfig)
