@@ -16,27 +16,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
   const [isMounted, setIsMounted] = useState(false)
   // Utiliser notre hook personnalisé pour persister l'état de la sidebar
   const [isOpen, setIsOpen] = useLocalStorage<boolean>('sidebarOpen', true)
-  // Utiliser le contexte d'animation
-  const { shouldAnimate, isPageTransitioning } = useAnimation()
   // Obtenir le chemin actuel pour mettre en évidence le lien actif
   const pathname = usePathname()
 
   // S'assurer que le composant est monté avant d'appliquer les états côté client
   useEffect(() => {
-    console.log('Sidebar mounting...')
     setIsMounted(true)
   }, [])
 
   // Mémoriser la fonction de toggle pour éviter les re-rendus inutiles
   const toggleSidebar = useCallback(() => {
-    console.log('Toggling sidebar from', isOpen, 'to', !isOpen)
     setIsOpen(!isOpen)
   }, [isOpen, setIsOpen])
 
-  // Call the onToggle callback when isOpen changes
+  // Appeler le callback onToggle lorsque isOpen change
   useEffect(() => {
     if (onToggle && isMounted) {
-      console.log('Calling onToggle with isOpen:', isOpen)
       onToggle(isOpen)
     }
   }, [isOpen, onToggle, isMounted])
@@ -46,13 +41,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
 
   // Fonction pour déterminer si un lien est actif
   const isLinkActive = useCallback(
-    (href: string) => {
-      return pathname === href || pathname.startsWith(`${href}/`)
-    },
+    (href: string) => pathname === href || pathname.startsWith(`${href}/`),
     [pathname],
   )
 
-  // Classe pour les liens actifs
+  // Classes pour les liens
   const activeLinkClass = 'text-blue-600 dark:text-blue-400 font-medium'
   const linkClass =
     'block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors'

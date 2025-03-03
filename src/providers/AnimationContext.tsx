@@ -45,7 +45,6 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }
 
   useEffect(() => {
     if (pathname) {
-      console.log('Route visitée:', pathname)
       setVisitedRoutes((prev) => {
         const newSet = new Set(prev)
         newSet.add(pathname)

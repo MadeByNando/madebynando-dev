@@ -20,11 +20,10 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = memo(({ children }) =
   const [sidebarOpen, setSidebarOpen] = useLocalStorage<boolean>('sidebarOpen', true)
   const [headerVisible, setHeaderVisible] = useState(false) // Commencer avec false pour éviter les problèmes d'hydratation
   const pathname = usePathname()
-  const { shouldAnimate, isPageTransitioning } = useAnimation()
+  const { shouldAnimate } = useAnimation()
 
   // S'assurer que le composant est monté avant d'appliquer les états côté client
   useEffect(() => {
-    console.log('SidebarLayout mounting...')
     setIsMounted(true)
     // Initialiser l'état du header une fois monté
     setHeaderVisible(!sidebarOpen)
@@ -33,7 +32,6 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = memo(({ children }) =
   // Écouter les changements d'état de la sidebar pour mettre à jour l'état du header
   useEffect(() => {
     if (isMounted) {
-      console.log('SidebarOpen changed to:', sidebarOpen)
       setHeaderVisible(!sidebarOpen)
     }
   }, [sidebarOpen, isMounted])
@@ -48,8 +46,6 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = memo(({ children }) =
   // Mémoriser la fonction de callback pour éviter les re-rendus inutiles
   const handleSidebarToggle = useCallback(
     (isOpen: boolean) => {
-      console.log('Sidebar toggle called with:', isOpen)
-
       // Mettre à jour l'état de la sidebar
       setSidebarOpen(isOpen)
     },

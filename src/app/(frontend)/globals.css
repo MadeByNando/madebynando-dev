@@ -138,6 +138,37 @@ main article {
   transform-style: preserve-3d;
 }
 
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 500ms ease-in-out forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut 500ms ease-in-out forwards;
+}
+
 /* Keyframes pour les animations du header */
 @keyframes slideInFromRight {
   0% {

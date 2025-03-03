@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // Hook personnalisé pour gérer l'état persistant avec localStorage
 export function useLocalStorage<T>(
@@ -16,17 +16,10 @@ export function useLocalStorage<T>(
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        console.log(`Reading localStorage for key: ${key}`)
         const item = window.localStorage.getItem(key)
         if (item) {
           const parsedValue = JSON.parse(item)
-          console.log(`Found value in localStorage for key ${key}:`, parsedValue)
           setStoredValue(parsedValue)
-        } else {
-          console.log(
-            `No value found in localStorage for key ${key}, using initialValue:`,
-            initialValue,
-          )
         }
         setIsInitialized(true)
       } catch (error) {
@@ -41,7 +34,6 @@ export function useLocalStorage<T>(
       try {
         // Permettre à la valeur d'être une fonction pour avoir la même API que useState
         const valueToStore = value instanceof Function ? value(storedValue) : value
-        console.log(`Setting localStorage for key ${key} to:`, valueToStore)
 
         // Sauvegarder l'état
         setStoredValue(valueToStore)
