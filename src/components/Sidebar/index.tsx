@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useAnimation } from '@/providers/AnimationContext'
 import Link from 'next/link'
@@ -12,6 +12,8 @@ type SidebarProps = {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
+  // État pour suivre si le composant est monté (côté client)
+  const [isMounted, setIsMounted] = useState(false)
   // Utiliser notre hook personnalisé pour persister l'état de la sidebar
   const [isOpen, setIsOpen] = useLocalStorage<boolean>('sidebarOpen', true)
   // Utiliser le contexte d'animation
@@ -19,23 +21,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
   // Obtenir le chemin actuel pour mettre en évidence le lien actif
   const pathname = usePathname()
 
+  // S'assurer que le composant est monté avant d'appliquer les états côté client
+  useEffect(() => {
+    console.log('Sidebar mounting...')
+    setIsMounted(true)
+  }, [])
+
   // Mémoriser la fonction de toggle pour éviter les re-rendus inutiles
   const toggleSidebar = useCallback(() => {
+    console.log('Toggling sidebar from', isOpen, 'to', !isOpen)
     setIsOpen(!isOpen)
   }, [isOpen, setIsOpen])
 
   // Call the onToggle callback when isOpen changes
   useEffect(() => {
-    if (onToggle) {
+    if (onToggle && isMounted) {
+      console.log('Calling onToggle with isOpen:', isOpen)
       onToggle(isOpen)
     }
-  }, [isOpen, onToggle])
+  }, [isOpen, onToggle, isMounted])
 
   // Classes pour les animations
-  const transitionClass =
-    shouldAnimate && !isPageTransitioning
-      ? 'transition-all duration-300 ease-in-out'
-      : 'transition-none'
+  const transitionClass = isMounted ? 'transition-all duration-500 ease-in-out' : 'transition-none'
 
   // Fonction pour déterminer si un lien est actif
   const isLinkActive = useCallback(
@@ -64,11 +71,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
       {/* Sidebar avec animation conditionnelle */}
       <aside
         className={`fixed top-0 left-0 h-screen bg-gray-100 dark:bg-gray-800 flex flex-col ${transitionClass}
-                   ${isOpen ? 'w-96 opacity-100' : 'w-0 opacity-0 overflow-hidden'} 
+                   ${isMounted && isOpen ? 'w-96 opacity-100' : 'w-0 opacity-0 overflow-hidden'} 
                    ${className}`}
       >
         {/* Bouton de fermeture à l'intérieur de la sidebar quand elle est ouverte */}
-        {isOpen && (
+        {isMounted && isOpen && (
           <button
             onClick={toggleSidebar}
             className={`absolute z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
@@ -127,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
       </aside>
 
       {/* Bouton d'ouverture visible uniquement quand la sidebar est fermée */}
-      {!isOpen && (
+      {isMounted && !isOpen && (
         <button
           onClick={toggleSidebar}
           className={`fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 

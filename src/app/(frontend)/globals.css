@@ -130,3 +130,49 @@ main article {
   right: 0;
   z-index: 50;
 }
+
+/* Améliorer les performances d'animation */
+.transform {
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Keyframes pour les animations du header */
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+    visibility: visible;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@keyframes slideOutToRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.header-slide-in {
+  animation: slideInFromRight 0.5s forwards;
+}
+
+.header-slide-out {
+  animation: slideOutToRight 0.5s forwards;
+}
+
+.hidden {
+  display: none;
+}

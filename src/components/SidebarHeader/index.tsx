@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, memo } from 'react'
+import React, { useState, useCallback, memo, useEffect, useRef } from 'react'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { useAnimation } from '@/providers/AnimationContext'
 import Link from 'next/link'
@@ -13,23 +13,108 @@ type SidebarHeaderProps = {
 // Utiliser memo pour éviter les re-rendus inutiles
 export const SidebarHeader: React.FC<SidebarHeaderProps> = memo(({ isVisible }) => {
   const [menuOpen, setMenuOpen] = useState(false)
-  // Utiliser le contexte d'animation
-  const { shouldAnimate, isPageTransitioning } = useAnimation()
+  const [isMounted, setIsMounted] = useState(false)
+  // Référence pour suivre si nous devons afficher le header même lorsqu'il est invisible (pour l'animation de sortie)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [shouldRender, setShouldRender] = useState(false)
+  const [animationPlayed, setAnimationPlayed] = useState(false)
+  // Référence pour stocker l'état de visibilité précédent
+  const prevIsVisibleRef = useRef<boolean>(false)
+  // Référence pour suivre si une transition est en cours
+  const isTransitioningRef = useRef<boolean>(false)
+
+  // Utiliser le contexte d'animation amélioré
+  const { shouldAnimate, isPageTransitioning, visitedRoutes, hasVisitedRoute } = useAnimation()
   // Obtenir le chemin actuel pour mettre en évidence le lien actif
   const pathname = usePathname()
+  const isNewRoute = !hasVisitedRoute(pathname)
+
+  // S'assurer que le composant est monté avant d'appliquer les animations
+  useEffect(() => {
+    setIsMounted(true)
+    if (isVisible) {
+      setShouldRender(true)
+      prevIsVisibleRef.current = isVisible
+    }
+  }, [])
+
+  // Marquer l'animation comme jouée après le montage initial
+  useEffect(() => {
+    if (isMounted && !animationPlayed) {
+      setAnimationPlayed(true)
+    }
+  }, [isMounted, animationPlayed])
+
+  // Détecter les changements d'état de visibilité
+  useEffect(() => {
+    // Si la visibilité a changé, marquer la transition comme active
+    if (prevIsVisibleRef.current !== isVisible) {
+      console.log(`Changement de visibilité: ${prevIsVisibleRef.current} -> ${isVisible}`)
+      isTransitioningRef.current = true
+
+      // Après un délai, réinitialiser l'état de transition
+      setTimeout(() => {
+        isTransitioningRef.current = false
+      }, 500) // Correspondant à la durée de l'animation
+    }
+
+    // Mettre à jour la référence pour le prochain changement
+    prevIsVisibleRef.current = isVisible
+  }, [isVisible])
+
+  // Gérer l'animation de disparition en utilisant un événement d'animation
+  useEffect(() => {
+    if (!headerRef.current) return
+
+    const handleAnimationEnd = (e: AnimationEvent) => {
+      if (e.animationName.includes('slideOutToRight') && !isVisible) {
+        console.log('Animation de disparition terminée')
+        setShouldRender(false)
+      }
+
+      if (e.animationName.includes('slideInFromRight') && isVisible) {
+        console.log("Animation d'apparition terminée")
+        setShouldRender(true)
+      }
+    }
+
+    headerRef.current.addEventListener('animationend', handleAnimationEnd)
+
+    return () => {
+      headerRef.current?.removeEventListener('animationend', handleAnimationEnd)
+    }
+  }, [isVisible])
+
+  // Mettre à jour shouldRender quand isVisible change
+  useEffect(() => {
+    console.log('SidebarHeader isVisible changed to:', isVisible)
+    if (isVisible) {
+      setShouldRender(true)
+    }
+    // Ne pas désactiver le rendu ici pour permettre à l'animation de sortie de s'exécuter
+  }, [isVisible])
 
   const toggleMenu = useCallback(() => {
     setMenuOpen((prev) => !prev)
   }, [])
 
-  // Classes pour les animations
-  const transitionClass =
-    shouldAnimate && !isPageTransitioning
-      ? 'transition-all duration-300 ease-in-out'
-      : 'transition-none'
+  // Décider si l'animation doit être jouée ou non
+  // Jouer l'animation dans deux cas :
+  // 1. C'est une nouvelle route
+  // 2. L'état de visibilité a changé (la sidebar a été ouverte/fermée)
+  const shouldPlayAnimation =
+    isMounted && (isNewRoute || !animationPlayed || isTransitioningRef.current)
 
-  // Calculer les classes pour l'animation de visibilité
-  const visibilityClasses = isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+  // Utiliser des animations keyframes plutôt que des transitions
+  const animationClass = isMounted
+    ? isVisible
+      ? shouldPlayAnimation
+        ? 'header-slide-in'
+        : '' // Pas d'animation si la route a déjà été visitée et qu'il n'y a pas de transition
+      : shouldRender
+        ? 'header-slide-out'
+        : 'hidden'
+    : 'hidden'
 
   // Fonction pour déterminer si un lien est actif
   const isLinkActive = useCallback(
@@ -56,9 +141,26 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = memo(({ isVisible }) 
     { href: '/contact', label: 'Me contacter' },
   ]
 
+  // Si le composant n'est pas monté, ne pas le rendre pour éviter les problèmes d'hydratation
+  if (!isMounted) {
+    return null
+  }
+
+  // Ne pas rendre si shouldRender est false - cela ne se produit qu'APRÈS l'animation de sortie
+  if (!shouldRender && !isVisible) {
+    return null
+  }
+
   return (
     <header
-      className={`fixed top-0 right-0 z-40 p-4 bg-white dark:bg-gray-800 shadow-md rounded-bl-lg ${transitionClass} ${visibilityClasses}`}
+      ref={headerRef}
+      className={`fixed top-0 right-0 z-40 p-4 bg-white dark:bg-gray-800 shadow-md rounded-bl-lg ${animationClass} will-change-transform will-change-opacity`}
+      style={{
+        transformOrigin: 'right top',
+        // S'assurer que le header est visible s'il doit l'être mais sans animation
+        transform: isVisible && !animationClass ? 'translateX(0)' : undefined,
+        opacity: isVisible && !animationClass ? 1 : undefined,
+      }}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center mr-6">

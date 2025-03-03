@@ -14,11 +14,15 @@ import { usePathname, useSearchParams } from 'next/navigation'
 type AnimationContextType = {
   shouldAnimate: boolean
   isPageTransitioning: boolean
+  visitedRoutes: Set<string>
+  hasVisitedRoute: (route: string) => boolean
 }
 
 const AnimationContext = createContext<AnimationContextType>({
   shouldAnimate: false,
   isPageTransitioning: false,
+  visitedRoutes: new Set<string>(),
+  hasVisitedRoute: () => false,
 })
 
 export const useAnimation = () => useContext(AnimationContext)
@@ -30,18 +34,27 @@ type AnimationProviderProps = {
 export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }) => {
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const [isPageTransitioning, setIsPageTransitioning] = useState(true)
+  const [visitedRoutes, setVisitedRoutes] = useState<Set<string>>(new Set())
+
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  // Créer une clé de dépendance pour détecter les changements de route
-  // Cela évite de créer un nouvel objet à chaque rendu
   const routeKey = useMemo(() => {
     return `${pathname}?${searchParams?.toString() || ''}`
   }, [pathname, searchParams])
 
-  // Désactiver les animations lors du chargement initial
   useEffect(() => {
-    // Attendre que le composant soit monté et rendu
+    if (pathname) {
+      console.log('Route visitée:', pathname)
+      setVisitedRoutes((prev) => {
+        const newSet = new Set(prev)
+        newSet.add(pathname)
+        return newSet
+      })
+    }
+  }, [pathname])
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setShouldAnimate(true)
       setIsPageTransitioning(false)
@@ -50,28 +63,33 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }
     return () => clearTimeout(timer)
   }, [])
 
-  // Gérer les transitions de page
   useEffect(() => {
-    // Ne pas déclencher de transition si nous sommes déjà en transition
     if (!isPageTransitioning) {
       setIsPageTransitioning(true)
 
-      // Réactiver les animations après un court délai
       const timer = setTimeout(() => {
         setIsPageTransitioning(false)
-      }, 50)
+      }, 300)
 
       return () => clearTimeout(timer)
     }
   }, [routeKey, isPageTransitioning])
 
-  // Mémoriser la valeur du contexte pour éviter les re-rendus inutiles
+  const hasVisitedRoute = useCallback(
+    (route: string) => {
+      return visitedRoutes.has(route)
+    },
+    [visitedRoutes],
+  )
+
   const contextValue = useMemo(
     () => ({
       shouldAnimate,
       isPageTransitioning,
+      visitedRoutes,
+      hasVisitedRoute,
     }),
-    [shouldAnimate, isPageTransitioning],
+    [shouldAnimate, isPageTransitioning, visitedRoutes, hasVisitedRoute],
   )
 
   return <AnimationContext.Provider value={contextValue}>{children}</AnimationContext.Provider>
