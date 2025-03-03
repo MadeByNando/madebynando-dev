@@ -8,6 +8,7 @@ import React, {
   ReactNode,
   useMemo,
   useCallback,
+  Suspense,
 } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
@@ -31,17 +32,35 @@ type AnimationProviderProps = {
   children: ReactNode
 }
 
-export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }) => {
-  const [shouldAnimate, setShouldAnimate] = useState(false)
-  const [isPageTransitioning, setIsPageTransitioning] = useState(true)
+// Composant qui utilise useSearchParams, enveloppé dans un Suspense
+const AnimationContent: React.FC = () => {
   const [visitedRoutes, setVisitedRoutes] = useState<Set<string>>(new Set())
-
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const routeKey = useMemo(() => {
     return `${pathname}?${searchParams?.toString() || ''}`
   }, [pathname, searchParams])
+
+  useEffect(() => {
+    if (pathname) {
+      setVisitedRoutes((prev) => {
+        const newSet = new Set(prev)
+        newSet.add(pathname)
+        return newSet
+      })
+    }
+  }, [pathname])
+
+  return null // Ce composant n'affiche rien, il met juste à jour le contexte
+}
+
+export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }) => {
+  const [shouldAnimate, setShouldAnimate] = useState(false)
+  const [isPageTransitioning, setIsPageTransitioning] = useState(true)
+  const [visitedRoutes, setVisitedRoutes] = useState<Set<string>>(new Set())
+
+  const pathname = usePathname()
 
   useEffect(() => {
     if (pathname) {
@@ -62,6 +81,7 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }
     return () => clearTimeout(timer)
   }, [])
 
+  // La logique liée au routeKey est déplacée dans le composant AnimationContent
   useEffect(() => {
     if (!isPageTransitioning) {
       setIsPageTransitioning(true)
@@ -72,7 +92,7 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }
 
       return () => clearTimeout(timer)
     }
-  }, [routeKey, isPageTransitioning])
+  }, [pathname, isPageTransitioning])
 
   const hasVisitedRoute = useCallback(
     (route: string) => {
@@ -91,5 +111,12 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }
     [shouldAnimate, isPageTransitioning, visitedRoutes, hasVisitedRoute],
   )
 
-  return <AnimationContext.Provider value={contextValue}>{children}</AnimationContext.Provider>
+  return (
+    <AnimationContext.Provider value={contextValue}>
+      <Suspense fallback={null}>
+        <AnimationContent />
+      </Suspense>
+      {children}
+    </AnimationContext.Provider>
+  )
 }
