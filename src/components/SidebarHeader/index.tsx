@@ -21,10 +21,12 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = memo(({ isVisible }) 
   // Référence pour suivre si une transition est en cours
   const isTransitioningRef = useRef<boolean>(false)
 
-  // Utiliser le contexte d'animation
-  const { visitedRoutes, hasVisitedRoute } = useAnimation()
+  // Supprimer la dépendance à visitedRoutes et hasVisitedRoute
+  // const { visitedRoutes, hasVisitedRoute } = useAnimation()
   const pathname = usePathname()
-  const isNewRoute = !hasVisitedRoute(pathname)
+
+  // Utiliser une référence pour suivre le montage initial
+  const initialMountRef = useRef(true)
 
   // S'assurer que le composant est monté avant d'appliquer les animations
   useEffect(() => {
@@ -32,6 +34,13 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = memo(({ isVisible }) 
     if (isVisible) {
       setShouldRender(true)
       prevIsVisibleRef.current = isVisible
+    }
+  }, [])
+
+  // Réinitialiser initialMountRef à false après le premier rendu
+  useEffect(() => {
+    if (initialMountRef.current) {
+      initialMountRef.current = false
     }
   }, [])
 
@@ -86,7 +95,8 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = memo(({ isVisible }) 
   }, [])
 
   // Décider si l'animation doit être jouée
-  const shouldPlayAnimation = isMounted && (isNewRoute || isTransitioningRef.current)
+  // Ne jouer l'animation que lors du changement d'état de visibilité, pas lors des changements de route
+  const shouldPlayAnimation = isMounted && (isTransitioningRef.current || initialMountRef.current)
 
   // Déterminer la classe d'animation à utiliser
   const animationClass = isMounted
