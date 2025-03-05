@@ -152,13 +152,9 @@ export const Sidebar = React.memo(
           )}
 
           <nav className="p-4 flex flex-col h-full">
-            <div className="mb-8 flex items-center space-x-4">
-              <img src="/images/logo-mbn.png" alt="Logo" className="h-12 w-12" />
-              <h1 className="text-lg font-semibold text-white">
-                Fernando
-                <br />
-                Pinho
-              </h1>
+            <div className="mb-8 mt-2 px-2 flex items-center space-x-4">
+              <img src="/images/logo-mbn.png" alt="Logo" className="h-10 w-10" />
+              <h1 className="text-lg text-white">Fernando Pinho</h1>
             </div>
 
             <ul className="space-y-1 flex-1">
