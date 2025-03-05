@@ -15,9 +15,14 @@ const PersistentSidebar = React.memo(
 )
 PersistentSidebar.displayName = 'PersistentSidebar'
 
+// Pour SidebarHeader, on doit permettre les mises à jour basées sur isVisible
+// mais ignorer les changements de pathname
 const PersistentSidebarHeader = React.memo(
   (props: React.ComponentProps<typeof SidebarHeader>) => <SidebarHeader {...props} />,
-  () => true, // Toujours retourner true pour éviter les re-rendus
+  (prevProps, nextProps) => {
+    // Re-rendre seulement si isVisible change
+    return prevProps.isVisible === nextProps.isVisible
+  },
 )
 PersistentSidebarHeader.displayName = 'PersistentSidebarHeader'
 
@@ -26,7 +31,7 @@ type SidebarLayoutProps = {
 }
 
 // Utiliser memo avec une fonction de comparaison qui ignore les enfants
-// pour éviter les re-rendus inutiles du layout lors des changements de page
+// mais pas les changements importants d'état interne
 export const SidebarLayout = React.memo(
   ({ children }: SidebarLayoutProps) => {
     // État pour suivre si le composant est monté (côté client)
@@ -38,15 +43,19 @@ export const SidebarLayout = React.memo(
 
     // S'assurer que le composant est monté avant d'appliquer les états côté client
     useEffect(() => {
-      setIsMounted(true)
-      // Initialiser l'état du header une fois monté
-      setHeaderVisible(!sidebarOpen)
-    }, [sidebarOpen])
+      if (!isMounted) {
+        setIsMounted(true)
+        // Initialiser l'état du header une fois monté
+        setHeaderVisible(!sidebarOpen)
+        console.log('SidebarLayout mounted, initializing headerVisible:', !sidebarOpen)
+      }
+    }, [sidebarOpen, isMounted])
 
     // Écouter les changements d'état de la sidebar pour mettre à jour l'état du header
     useEffect(() => {
       if (isMounted) {
         setHeaderVisible(!sidebarOpen)
+        console.log('sidebarOpen changed, updating headerVisible to:', !sidebarOpen)
       }
     }, [sidebarOpen, isMounted])
 
@@ -55,6 +64,7 @@ export const SidebarLayout = React.memo(
       (isOpen: boolean) => {
         // Mettre à jour l'état de la sidebar
         setSidebarOpen(isOpen)
+        console.log('Sidebar toggled, new state:', isOpen)
       },
       [setSidebarOpen],
     )
@@ -62,7 +72,8 @@ export const SidebarLayout = React.memo(
     // Console.log pour débogage (à retirer en production)
     useEffect(() => {
       console.log('SidebarLayout rendered, pathname:', pathname)
-    }, [pathname])
+      console.log('headerVisible:', headerVisible, 'sidebarOpen:', sidebarOpen)
+    }, [pathname, headerVisible, sidebarOpen])
 
     return (
       <div className="flex h-screen overflow-hidden">
@@ -97,10 +108,12 @@ export const SidebarLayout = React.memo(
     )
   },
   // Fonction de comparaison personnalisée pour le SidebarLayout
-  // Ignorer les changements des enfants, ce qui est le cas lors des navigations
+  // Permettre les re-rendus pour les enfants, mais pas pour les changements d'URL
   (prevProps, nextProps) => {
-    // Ne pas re-rendre le layout quand seuls les enfants changent
-    return true // Toujours retourner true pour que le layout persiste
+    // Quand les enfants changent, on veut que le layout se re-rende
+    // pour que les enfants puissent être mis à jour, mais pas à cause des
+    // changements d'URL
+    return false // Toujours autoriser les re-rendus pour que les enfants soient mis à jour
   },
 )
 

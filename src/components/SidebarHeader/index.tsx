@@ -26,9 +26,11 @@ export const SidebarHeader = React.memo(
         mountedRef.current = true
         setIsMounted(true)
         console.log('SidebarHeader mounted')
-        if (isVisible) {
-          setShouldRender(true)
-        }
+      }
+
+      // Mettre à jour shouldRender quand isVisible change, mais APRÈS que le composant soit monté
+      if (isVisible) {
+        setShouldRender(true)
       }
     }, [isVisible])
 
@@ -49,17 +51,17 @@ export const SidebarHeader = React.memo(
       }
     }, [isVisible])
 
-    // Mettre à jour shouldRender quand isVisible change
-    useEffect(() => {
-      if (isVisible) {
-        setShouldRender(true)
-      }
-    }, [isVisible])
-
     // Console.log pour débogage (à retirer en production)
     useEffect(() => {
-      console.log('SidebarHeader rendered, pathname:', pathname)
-    }, [pathname])
+      console.log(
+        'SidebarHeader rendered, pathname:',
+        pathname,
+        'isVisible:',
+        isVisible,
+        'shouldRender:',
+        shouldRender,
+      )
+    }, [pathname, isVisible, shouldRender])
 
     const toggleMenu = useCallback(() => {
       setMenuOpen((prev) => !prev)
@@ -191,7 +193,7 @@ export const SidebarHeader = React.memo(
     )
   },
   (prevProps, nextProps) => {
-    // On ne re-render que si la visibilité change
+    // On doit re-rendre quand la visibilité change
     return prevProps.isVisible === nextProps.isVisible
   },
 )
