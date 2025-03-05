@@ -2,7 +2,6 @@
 
 import React, { useEffect, useCallback, useState, useRef } from 'react'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { useAnimation } from '@/providers/AnimationContext'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -19,19 +18,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
   // Obtenir le chemin actuel pour mettre en évidence le lien actif
   const pathname = usePathname()
 
-  // Référence pour suivre le montage initial
-  const initialMountRef = useRef(true)
-
   // S'assurer que le composant est monté avant d'appliquer les états côté client
   useEffect(() => {
     setIsMounted(true)
-  }, [])
-
-  // Réinitialiser initialMountRef à false après le premier rendu
-  useEffect(() => {
-    if (initialMountRef.current) {
-      initialMountRef.current = false
-    }
   }, [])
 
   // Mémoriser la fonction de toggle pour éviter les re-rendus inutiles
@@ -46,11 +35,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ className, onToggle }) => {
     }
   }, [isOpen, onToggle, isMounted])
 
-  // Classes pour les animations - ne les appliquer que lors du montage initial ou des changements d'état
-  const transitionClass =
-    isMounted && !initialMountRef.current
-      ? 'transition-all duration-500 ease-in-out'
-      : 'transition-none'
+  // Classes pour les animations - transition simple
+  const transitionClass = 'transition-all duration-500 ease-in-out'
 
   // Fonction pour déterminer si un lien est actif
   const isLinkActive = useCallback(

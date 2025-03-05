@@ -6,7 +6,6 @@ import { SidebarHeader } from '../../SidebarHeader'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { usePathname } from 'next/navigation'
-import { useAnimation } from '@/providers/AnimationContext'
 
 type SidebarLayoutProps = {
   children: React.ReactNode
@@ -20,14 +19,13 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = memo(({ children }) =
   const [sidebarOpen, setSidebarOpen] = useLocalStorage<boolean>('sidebarOpen', true)
   const [headerVisible, setHeaderVisible] = useState(false) // Commencer avec false pour éviter les problèmes d'hydratation
   const pathname = usePathname()
-  const { shouldAnimate } = useAnimation()
 
   // S'assurer que le composant est monté avant d'appliquer les états côté client
   useEffect(() => {
     setIsMounted(true)
     // Initialiser l'état du header une fois monté
     setHeaderVisible(!sidebarOpen)
-  }, [])
+  }, [sidebarOpen])
 
   // Écouter les changements d'état de la sidebar pour mettre à jour l'état du header
   useEffect(() => {

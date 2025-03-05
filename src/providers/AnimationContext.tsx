@@ -4,12 +4,10 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useMe
 import { usePathname } from 'next/navigation'
 
 type AnimationContextType = {
-  shouldAnimate: boolean
   isPageTransitioning: boolean
 }
 
 const AnimationContext = createContext<AnimationContextType>({
-  shouldAnimate: false,
   isPageTransitioning: false,
 })
 
@@ -20,37 +18,25 @@ type AnimationProviderProps = {
 }
 
 export const AnimationProvider: React.FC<AnimationProviderProps> = ({ children }) => {
-  const [shouldAnimate, setShouldAnimate] = useState(false)
-  const [isPageTransitioning, setIsPageTransitioning] = useState(true)
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false)
   const pathname = usePathname()
 
+  // Gérer uniquement les transitions de page
   useEffect(() => {
+    setIsPageTransitioning(true)
+
     const timer = setTimeout(() => {
-      setShouldAnimate(true)
       setIsPageTransitioning(false)
-    }, 100)
+    }, 300)
 
     return () => clearTimeout(timer)
-  }, [])
-
-  useEffect(() => {
-    if (!isPageTransitioning) {
-      setIsPageTransitioning(true)
-
-      const timer = setTimeout(() => {
-        setIsPageTransitioning(false)
-      }, 300)
-
-      return () => clearTimeout(timer)
-    }
-  }, [pathname, isPageTransitioning])
+  }, [pathname])
 
   const contextValue = useMemo(
     () => ({
-      shouldAnimate,
       isPageTransitioning,
     }),
-    [shouldAnimate, isPageTransitioning],
+    [isPageTransitioning],
   )
 
   return <AnimationContext.Provider value={contextValue}>{children}</AnimationContext.Provider>
