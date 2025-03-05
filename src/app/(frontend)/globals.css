@@ -169,7 +169,7 @@ main article {
   animation: fadeOut 500ms ease-in-out forwards;
 }
 
-/* Keyframes pour les animations du header */
+/* Keyframes pour les animations du header avec performances améliorées */
 @keyframes slideInFromRight {
   0% {
     transform: translateX(100%);
@@ -197,11 +197,17 @@ main article {
 }
 
 .header-slide-in {
-  animation: slideInFromRight 0.5s forwards;
+  animation: slideInFromRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .header-slide-out {
-  animation: slideOutToRight 0.5s forwards;
+  animation: slideOutToRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .hidden {

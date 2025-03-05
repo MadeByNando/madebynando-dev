@@ -1,86 +1,108 @@
 'use client'
 
-import React, { useEffect, useCallback, memo, useState } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import { Sidebar } from '../../Sidebar'
 import { SidebarHeader } from '../../SidebarHeader'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { usePathname } from 'next/navigation'
-import { useAnimation } from '@/providers/AnimationContext'
 
+// Types pour les props
 type SidebarLayoutProps = {
   children: React.ReactNode
 }
 
-// Utiliser memo pour éviter les re-rendus inutiles
-export const SidebarLayout: React.FC<SidebarLayoutProps> = memo(({ children }) => {
-  // État pour suivre si le composant est monté (côté client)
-  const [isMounted, setIsMounted] = useState(false)
-  // Utiliser notre hook personnalisé pour persister l'état de la sidebar
-  const [sidebarOpen, setSidebarOpen] = useLocalStorage<boolean>('sidebarOpen', true)
-  const [headerVisible, setHeaderVisible] = useState(false) // Commencer avec false pour éviter les problèmes d'hydratation
-  const pathname = usePathname()
-  const { shouldAnimate } = useAnimation()
+/**
+ * Composant persistant pour Sidebar avec mémo optimisé
+ * pour éviter les re-rendus lors des changements de pathname
+ */
+const PersistentSidebar = React.memo(
+  (props: React.ComponentProps<typeof Sidebar>) => <Sidebar {...props} />,
+  () => true, // Toujours retourner true pour garantir la persistance
+)
+PersistentSidebar.displayName = 'PersistentSidebar'
 
-  // S'assurer que le composant est monté avant d'appliquer les états côté client
-  useEffect(() => {
-    setIsMounted(true)
-    // Initialiser l'état du header une fois monté
-    setHeaderVisible(!sidebarOpen)
-  }, [])
+/**
+ * Composant persistant pour SidebarHeader
+ * re-rendu uniquement quand sa visibilité change
+ */
+const PersistentSidebarHeader = React.memo(
+  (props: React.ComponentProps<typeof SidebarHeader>) => <SidebarHeader {...props} />,
+  (prevProps, nextProps) => prevProps.isVisible === nextProps.isVisible,
+)
+PersistentSidebarHeader.displayName = 'PersistentSidebarHeader'
 
-  // Écouter les changements d'état de la sidebar pour mettre à jour l'état du header
-  useEffect(() => {
-    if (isMounted) {
-      setHeaderVisible(!sidebarOpen)
-    }
-  }, [sidebarOpen, isMounted])
+/**
+ * Layout principal de l'application qui gère la disposition
+ * de la barre latérale, de l'en-tête et du contenu principal
+ */
+export const SidebarLayout = React.memo(
+  ({ children }: SidebarLayoutProps) => {
+    // États et hooks
+    const [isMounted, setIsMounted] = useState(false)
+    const [sidebarOpen, setSidebarOpen] = useLocalStorage<boolean>('sidebarOpen', true)
+    const [headerVisible, setHeaderVisible] = useState(false)
+    const pathname = usePathname()
 
-  // Effet pour éviter les réinitialisations lors des changements de page
-  useEffect(() => {
-    // Cette fonction vide permet de s'assurer que le composant ne se réinitialise pas
-    // lors des changements de page, car elle crée une dépendance au pathname
-    // sans déclencher de logique supplémentaire
-  }, [pathname])
+    // Initialisation des états côté client
+    useEffect(() => {
+      if (!isMounted) {
+        setIsMounted(true)
+        setHeaderVisible(!sidebarOpen)
+      }
+    }, [sidebarOpen, isMounted])
 
-  // Mémoriser la fonction de callback pour éviter les re-rendus inutiles
-  const handleSidebarToggle = useCallback(
-    (isOpen: boolean) => {
-      // Mettre à jour l'état de la sidebar
-      setSidebarOpen(isOpen)
-    },
-    [setSidebarOpen],
-  )
+    // Synchroniser l'état du header avec celui de la sidebar
+    useEffect(() => {
+      if (isMounted) {
+        setHeaderVisible(!sidebarOpen)
+      }
+    }, [sidebarOpen, isMounted])
 
-  return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Wrapper pour la navigation persistante */}
-      <div className="fixed inset-0 z-40 pointer-events-none">
-        <div className="pointer-events-auto">
-          {/* ThemeSelector en position fixed en haut à droite - visible seulement quand la sidebar est ouverte */}
-          {isMounted && sidebarOpen && (
-            <header className="fixed top-4 right-4 z-50">
-              <ThemeSelector />
-            </header>
-          )}
+    // Callback mémorisé pour le toggle de la sidebar
+    const handleSidebarToggle = useCallback(
+      (isOpen: boolean) => {
+        setSidebarOpen(isOpen)
+      },
+      [setSidebarOpen],
+    )
 
-          {/* Header avec navigation - visible seulement quand la sidebar est fermée */}
-          <SidebarHeader isVisible={headerVisible} />
+    return (
+      <div className="flex h-screen overflow-hidden">
+        {/* Wrapper pour éléments de navigation persistants */}
+        <div className="fixed inset-0 z-40 pointer-events-none">
+          <div className="pointer-events-auto">
+            {/* ThemeSelector visible uniquement quand la sidebar est ouverte */}
+            {isMounted && sidebarOpen && (
+              <header className="fixed top-4 right-4 z-50">
+                <ThemeSelector />
+              </header>
+            )}
 
-          {/* Sidebar à gauche */}
-          <Sidebar onToggle={handleSidebarToggle} />
+            {/* Header avec navigation - visible uniquement quand la sidebar est fermée */}
+            <PersistentSidebarHeader isVisible={headerVisible} />
+
+            {/* Sidebar à gauche */}
+            <PersistentSidebar onToggle={handleSidebarToggle} />
+          </div>
         </div>
+
+        {/* Contenu principal avec marge adaptative */}
+        <main className="flex-1 overflow-auto w-full h-full pt-2 pl-2 pr-2">
+          <div
+            className={`transition-all duration-500 ease-in-out ${
+              isMounted && sidebarOpen ? 'ml-96' : 'ml-0'
+            }`}
+            style={{ minHeight: 'calc(100vh - 1rem)' }}
+          >
+            {children}
+          </div>
+        </main>
       </div>
+    )
+  },
+  // Autoriser toujours les re-rendus pour la mise à jour des enfants
+  () => false,
+)
 
-      {/* Contenu principal */}
-      <main className="flex-1 overflow-auto w-full h-full pt-2 pl-2 pr-2">
-        <div
-          className={`transition-all duration-500 ease-in-out ${isMounted && sidebarOpen ? 'ml-96' : 'ml-0'}`}
-          style={{ minHeight: 'calc(100vh - 1rem)' }}
-        >
-          {children}
-        </div>
-      </main>
-    </div>
-  )
-})
+SidebarLayout.displayName = 'SidebarLayout'
