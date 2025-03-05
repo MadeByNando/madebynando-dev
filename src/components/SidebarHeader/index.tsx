@@ -109,6 +109,8 @@ export const SidebarHeader = React.memo(
           transformOrigin: 'right top',
           transform: isVisible && !animationClass ? 'translateX(0)' : undefined,
           opacity: isVisible && !animationClass ? 1 : undefined,
+          borderTopLeftRadius: '30px',
+          borderBottomLeftRadius: '30px',
         }}
       >
         <div className="flex items-center justify-between">
