@@ -52,19 +52,38 @@ export const Sidebar = React.memo(
     const pathname = usePathname()
     const mountedRef = useRef(false)
     const [isDarkMode, setIsDarkMode] = useState(false)
+    const [shouldRender, setShouldRender] = useState(false)
+    const sidebarRef = useRef<HTMLElement>(null)
 
     // Initialisation au montage côté client
     useEffect(() => {
       if (!mountedRef.current) {
         mountedRef.current = true
         setIsMounted(true)
+        setShouldRender(isOpen)
       }
 
       // Détecter le mode sombre initial
       if (typeof window !== 'undefined') {
         setIsDarkMode(document.documentElement.classList.contains('dark'))
       }
-    }, [])
+    }, [isOpen])
+
+    // Gestion de l'animation de disparition
+    useEffect(() => {
+      if (!sidebarRef.current) return
+
+      const handleAnimationEnd = (e: AnimationEvent) => {
+        if (e.animationName.includes('slideOutToLeft') && !isOpen) {
+          setShouldRender(false)
+        }
+      }
+
+      sidebarRef.current.addEventListener('animationend', handleAnimationEnd)
+      return () => {
+        sidebarRef.current?.removeEventListener('animationend', handleAnimationEnd)
+      }
+    }, [isOpen])
 
     // Observer les changements de thème
     useEffect(() => {
@@ -87,7 +106,11 @@ export const Sidebar = React.memo(
 
     // Toggle de la sidebar avec mémorisation
     const toggleSidebar = useCallback(() => {
-      setIsOpen(!isOpen)
+      const newState = !isOpen
+      setIsOpen(newState)
+      if (newState) {
+        setShouldRender(true)
+      }
     }, [isOpen, setIsOpen])
 
     // Notifier le parent des changements d'état
@@ -97,8 +120,14 @@ export const Sidebar = React.memo(
       }
     }, [isOpen, onToggle, isMounted])
 
-    // Classes et styles partagés
-    const transitionClass = 'transition-all duration-500 ease-in-out'
+    // Détermine la classe d'animation à appliquer
+    const animationClass = isMounted
+      ? isOpen
+        ? 'sidebar-slide-in'
+        : shouldRender
+          ? 'sidebar-slide-out'
+          : 'hidden'
+      : 'hidden'
 
     // Fonction pour déterminer si un lien est actif
     const isLinkActive = useCallback(
@@ -112,13 +141,45 @@ export const Sidebar = React.memo(
     const activeLinkClass =
       'flex items-center space-x-3 py-3 px-4 w-full text-white font-medium bg-blue-600/20 rounded-xl'
 
+    // Si la sidebar ne doit pas être rendue, ne rien afficher
+    if (!shouldRender && !isOpen) {
+      return (
+        <div className="relative">
+          {/* Bouton d'ouverture - visible uniquement quand la sidebar est fermée */}
+          {isMounted && !isOpen && (
+            <button
+              onClick={toggleSidebar}
+              className="fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
+                      flex items-center justify-center transition-all duration-300 ease-in-out
+                      left-4 top-4"
+              aria-label="Ouvrir le menu"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-gray-700 dark:text-gray-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      )
+    }
+
     return (
       <div className="relative">
-        {/* Sidebar avec animation conditionnelle */}
+        {/* Sidebar avec animation de déplacement latéral */}
         <aside
-          className={`fixed top-0 left-0 h-screen flex flex-col ${transitionClass}
-                    ${isMounted && isOpen ? 'w-96 opacity-100' : 'w-0 opacity-0 overflow-hidden'} 
-                    ${className || ''}`}
+          ref={sidebarRef}
+          className={`fixed top-0 left-0 h-screen flex flex-col w-96 ${animationClass} ${className || ''}`}
           style={{
             background: isDarkMode
               ? 'linear-gradient(to bottom, #0a1929, #1a365d)' // Dégradé pour le mode sombre
@@ -126,12 +187,12 @@ export const Sidebar = React.memo(
           }}
         >
           {/* Bouton de fermeture à l'intérieur de la sidebar */}
-          {isMounted && isOpen && (
+          {isMounted && (
             <button
               onClick={toggleSidebar}
-              className={`absolute z-10 p-2 rounded-full bg-gray-700 shadow-md 
-                      flex items-center justify-center ${transitionClass}
-                      right-4 top-4`}
+              className="absolute z-10 p-2 rounded-full bg-gray-700 shadow-md 
+                      flex items-center justify-center transition-all duration-300 ease-in-out
+                      right-4 top-4"
               aria-label="Fermer le menu"
             >
               <svg
@@ -199,9 +260,9 @@ export const Sidebar = React.memo(
         {isMounted && !isOpen && (
           <button
             onClick={toggleSidebar}
-            className={`fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
-                    flex items-center justify-center ${transitionClass}
-                    left-4 top-4`}
+            className="fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
+                    flex items-center justify-center transition-all duration-300 ease-in-out
+                    left-4 top-4"
             aria-label="Ouvrir le menu"
           >
             <svg

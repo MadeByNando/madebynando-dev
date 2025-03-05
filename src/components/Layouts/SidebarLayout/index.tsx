@@ -90,10 +90,11 @@ export const SidebarLayout = React.memo(
         {/* Contenu principal avec marge adaptative */}
         <main className="flex-1 overflow-auto w-full h-full pt-2 pl-2 pr-2">
           <div
-            className={`transition-all duration-500 ease-in-out ${
-              isMounted && sidebarOpen ? 'ml-96' : 'ml-0'
-            }`}
-            style={{ minHeight: 'calc(100vh - 1rem)' }}
+            className="transition-all duration-500 ease-in-out"
+            style={{
+              minHeight: 'calc(100vh - 1rem)',
+              marginLeft: isMounted && sidebarOpen ? '384px' : '0', // 384px = 96rem (w-96)
+            }}
           >
             {children}
           </div>
