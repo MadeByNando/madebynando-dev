@@ -29,6 +29,7 @@ export const SidebarHeader = React.memo(
     const [menuOpen, setMenuOpen] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
     const [shouldRender, setShouldRender] = useState(false)
+    const [isDarkMode, setIsDarkMode] = useState(false)
     const headerRef = useRef<HTMLDivElement>(null)
     const mountedRef = useRef(false)
     const pathname = usePathname()
@@ -44,7 +45,31 @@ export const SidebarHeader = React.memo(
       if (isVisible) {
         setShouldRender(true)
       }
+
+      // Détecter le mode sombre initial
+      if (typeof window !== 'undefined') {
+        setIsDarkMode(document.documentElement.classList.contains('dark'))
+      }
     }, [isVisible])
+
+    // Observer les changements de thème
+    useEffect(() => {
+      if (typeof window === 'undefined') return
+
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'class' && mutation.target === document.documentElement) {
+            setIsDarkMode(document.documentElement.classList.contains('dark'))
+          }
+        })
+      })
+
+      observer.observe(document.documentElement, { attributes: true })
+
+      return () => {
+        observer.disconnect()
+      }
+    }, [])
 
     // Gestion de l'animation de disparition
     useEffect(() => {
@@ -85,14 +110,12 @@ export const SidebarHeader = React.memo(
     // Classes pour les liens
     const linkClasses = {
       desktop: {
-        active: 'text-blue-600 dark:text-blue-400 font-medium',
-        normal:
-          'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors',
+        active: 'text-blue-400 font-medium',
+        normal: 'text-gray-300 hover:text-blue-400 transition-colors',
       },
       mobile: {
-        active: 'block py-1 text-blue-600 dark:text-blue-400 font-medium',
-        normal:
-          'block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors',
+        active: 'block py-1 text-blue-400 font-medium',
+        normal: 'block py-1 text-gray-300 hover:text-blue-400 transition-colors',
       },
     }
 
@@ -104,27 +127,28 @@ export const SidebarHeader = React.memo(
     return (
       <header
         ref={headerRef}
-        className={`fixed top-0 right-0 z-40 p-4 bg-white dark:bg-gray-800 shadow-md rounded-bl-lg ${animationClass} will-change-transform will-change-opacity`}
+        className={`fixed top-0 right-0 z-40 p-4 shadow-md rounded-bl-lg ${animationClass} will-change-transform will-change-opacity`}
         style={{
           transformOrigin: 'right top',
           transform: isVisible && !animationClass ? 'translateX(0)' : undefined,
           opacity: isVisible && !animationClass ? 1 : undefined,
           borderTopLeftRadius: '30px',
           borderBottomLeftRadius: '30px',
+          background: isDarkMode
+            ? 'linear-gradient(to right, #0a1929, #1a365d)' // Dégradé pour le mode sombre
+            : 'linear-gradient(to right, #1e3a8a, #3b82f6)', // Dégradé pour le mode clair
         }}
       >
         <div className="flex items-center justify-between">
           {/* Logo et nom */}
           <div className="flex items-center mr-6">
             <img src="/images/logo-mbn.png" alt="Logo" className="h-8 w-8 mr-2" />
-            <span className="font-semibold text-gray-800 dark:text-gray-200 hidden sm:inline">
-              Fernando Pinho
-            </span>
+            <span className="font-semibold text-white hidden sm:inline">Fernando Pinho</span>
           </div>
 
           {/* Bouton menu hamburger pour mobile */}
           <button
-            className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="md:hidden p-2 rounded-md text-gray-300 hover:bg-gray-700"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
@@ -169,7 +193,7 @@ export const SidebarHeader = React.memo(
 
         {/* Navigation mobile */}
         {menuOpen && (
-          <div className="md:hidden mt-4 py-2 border-t border-gray-200 dark:border-gray-700">
+          <div className="md:hidden mt-4 py-2 border-t border-gray-700">
             <nav>
               <ul className="space-y-2">
                 {NAV_LINKS.map(({ href, label }) => (
@@ -187,7 +211,7 @@ export const SidebarHeader = React.memo(
                 ))}
               </ul>
             </nav>
-            <div className="mt-4 pt-2 border-t border-gray-200 dark:border-gray-700">
+            <div className="mt-4 pt-2 border-t border-gray-700">
               <ThemeSelector />
             </div>
           </div>
