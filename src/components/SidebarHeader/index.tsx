@@ -5,36 +5,48 @@ import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+// Types pour les props
 type SidebarHeaderProps = {
   isVisible: boolean
 }
 
-// Utiliser React.memo avec une fonction de comparaison personnalisée
+// Liens de navigation partagés
+const NAV_LINKS = [
+  { href: '/services', label: 'Services' },
+  { href: '/a-propos', label: 'À propos' },
+  { href: '/cas-etude', label: "Cas d'étude" },
+  { href: '/posts', label: 'Blog' },
+  { href: '/contact', label: 'Me contacter' },
+]
+
+/**
+ * Composant SidebarHeader - Navigation en-tête affichée quand la sidebar est fermée
+ * Persiste entre les navigations grâce à React.memo
+ */
 export const SidebarHeader = React.memo(
   ({ isVisible }: SidebarHeaderProps) => {
+    // États et refs
     const [menuOpen, setMenuOpen] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
-    const headerRef = useRef<HTMLDivElement>(null)
     const [shouldRender, setShouldRender] = useState(false)
-    const pathname = usePathname()
-    // Référence pour suivre si le composant a déjà été monté
+    const headerRef = useRef<HTMLDivElement>(null)
     const mountedRef = useRef(false)
+    const pathname = usePathname()
 
-    // S'assurer que le composant est monté avant d'appliquer les animations
+    // Initialisation au montage côté client
     useEffect(() => {
       if (!mountedRef.current) {
         mountedRef.current = true
         setIsMounted(true)
-        console.log('SidebarHeader mounted')
       }
 
-      // Mettre à jour shouldRender quand isVisible change, mais APRÈS que le composant soit monté
+      // Mettre à jour l'état de rendu basé sur la visibilité
       if (isVisible) {
         setShouldRender(true)
       }
     }, [isVisible])
 
-    // Gérer l'animation de disparition en utilisant un événement d'animation
+    // Gestion de l'animation de disparition
     useEffect(() => {
       if (!headerRef.current) return
 
@@ -45,29 +57,17 @@ export const SidebarHeader = React.memo(
       }
 
       headerRef.current.addEventListener('animationend', handleAnimationEnd)
-
       return () => {
         headerRef.current?.removeEventListener('animationend', handleAnimationEnd)
       }
     }, [isVisible])
 
-    // Console.log pour débogage (à retirer en production)
-    useEffect(() => {
-      console.log(
-        'SidebarHeader rendered, pathname:',
-        pathname,
-        'isVisible:',
-        isVisible,
-        'shouldRender:',
-        shouldRender,
-      )
-    }, [pathname, isVisible, shouldRender])
-
+    // Toggle du menu mobile
     const toggleMenu = useCallback(() => {
       setMenuOpen((prev) => !prev)
     }, [])
 
-    // Déterminer simplement si l'animation doit être jouée et quelle classe appliquer
+    // Détermine la classe d'animation à appliquer
     const animationClass = isMounted
       ? isVisible
         ? 'header-slide-in'
@@ -83,23 +83,20 @@ export const SidebarHeader = React.memo(
     )
 
     // Classes pour les liens
-    const activeLinkClass = 'text-blue-600 dark:text-blue-400 font-medium'
-    const linkClass =
-      'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
-    const mobileLinkClass =
-      'block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
-    const mobileActiveLinkClass = 'block py-1 text-blue-600 dark:text-blue-400 font-medium'
+    const linkClasses = {
+      desktop: {
+        active: 'text-blue-600 dark:text-blue-400 font-medium',
+        normal:
+          'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors',
+      },
+      mobile: {
+        active: 'block py-1 text-blue-600 dark:text-blue-400 font-medium',
+        normal:
+          'block py-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors',
+      },
+    }
 
-    // Liens de navigation
-    const navLinks = [
-      { href: '/services', label: 'Services' },
-      { href: '/a-propos', label: 'À propos' },
-      { href: '/cas-etude', label: "Cas d'étude" },
-      { href: '/posts', label: 'Blog' },
-      { href: '/contact', label: 'Me contacter' },
-    ]
-
-    // Si le composant ne doit pas être rendu, ne rien afficher
+    // Si le header ne doit pas être rendu, ne rien afficher
     if (!shouldRender && !isVisible) {
       return null
     }
@@ -110,12 +107,12 @@ export const SidebarHeader = React.memo(
         className={`fixed top-0 right-0 z-40 p-4 bg-white dark:bg-gray-800 shadow-md rounded-bl-lg ${animationClass} will-change-transform will-change-opacity`}
         style={{
           transformOrigin: 'right top',
-          // S'assurer que le header est visible si nécessaire sans animation
           transform: isVisible && !animationClass ? 'translateX(0)' : undefined,
           opacity: isVisible && !animationClass ? 1 : undefined,
         }}
       >
         <div className="flex items-center justify-between">
+          {/* Logo et nom */}
           <div className="flex items-center mr-6">
             <img src="/images/logo-mbn.png" alt="Logo" className="h-8 w-8 mr-2" />
             <span className="font-semibold text-gray-800 dark:text-gray-200 hidden sm:inline">
@@ -123,7 +120,7 @@ export const SidebarHeader = React.memo(
             </span>
           </div>
 
-          {/* Hamburger menu for mobile */}
+          {/* Bouton menu hamburger pour mobile */}
           <button
             className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={toggleMenu}
@@ -145,15 +142,17 @@ export const SidebarHeader = React.memo(
             </svg>
           </button>
 
-          {/* Desktop navigation */}
+          {/* Navigation desktop */}
           <div className="hidden md:flex items-center space-x-6">
             <nav>
               <ul className="flex space-x-6">
-                {navLinks.map(({ href, label }) => (
+                {NAV_LINKS.map(({ href, label }) => (
                   <li key={href}>
                     <Link
                       href={href}
-                      className={isLinkActive(href) ? activeLinkClass : linkClass}
+                      className={
+                        isLinkActive(href) ? linkClasses.desktop.active : linkClasses.desktop.normal
+                      }
                       prefetch={true}
                     >
                       {label}
@@ -166,16 +165,18 @@ export const SidebarHeader = React.memo(
           </div>
         </div>
 
-        {/* Mobile navigation */}
+        {/* Navigation mobile */}
         {menuOpen && (
           <div className="md:hidden mt-4 py-2 border-t border-gray-200 dark:border-gray-700">
             <nav>
               <ul className="space-y-2">
-                {navLinks.map(({ href, label }) => (
+                {NAV_LINKS.map(({ href, label }) => (
                   <li key={href}>
                     <Link
                       href={href}
-                      className={isLinkActive(href) ? mobileActiveLinkClass : mobileLinkClass}
+                      className={
+                        isLinkActive(href) ? linkClasses.mobile.active : linkClasses.mobile.normal
+                      }
                       prefetch={true}
                     >
                       {label}
@@ -192,11 +193,8 @@ export const SidebarHeader = React.memo(
       </header>
     )
   },
-  (prevProps, nextProps) => {
-    // On doit re-rendre quand la visibilité change
-    return prevProps.isVisible === nextProps.isVisible
-  },
+  // Ne re-rendre que si la visibilité change
+  (prevProps, nextProps) => prevProps.isVisible === nextProps.isVisible,
 )
 
-// Ajouter un displayName pour faciliter le débogage
 SidebarHeader.displayName = 'SidebarHeader'
