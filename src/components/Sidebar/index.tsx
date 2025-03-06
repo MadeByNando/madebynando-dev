@@ -218,7 +218,7 @@ export const Sidebar = React.memo(
               <h1 className="text-lg text-white">Fernando Pinho</h1>
             </div>
 
-            <ul className="space-y-1 flex-1">
+            <ul className="space-y-1">
               {NAV_LINKS.map(({ href, label, icon }) => (
                 <li key={href}>
                   <Link
@@ -247,10 +247,54 @@ export const Sidebar = React.memo(
             </ul>
 
             {/* Interface de chat IA */}
-            <div className="p-4 mt-auto">
-              <h3 className="text-lg font-semibold mb-2 text-white">Chat IA</h3>
-              <div className="h-40 bg-gray-700 rounded-md flex items-center justify-center">
-                <p className="text-gray-400">Interface de chat ici</p>
+            <div className="flex-grow flex flex-col mt-4">
+              <div className="bg-gray-700 rounded-md flex flex-col justify-between flex-grow w-full overflow-hidden">
+                <div className="flex-grow flex items-center justify-center">
+                  <p className="text-gray-400">Interface de chat ici</p>
+                </div>
+
+                {/* Input style Siri */}
+                <div className="w-full">
+                  <div className="relative mx-0">
+                    {/* Conteneur avec bordure dégradée */}
+                    <div className="relative overflow-hidden rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 p-[2px]">
+                      {/* Effet de glow */}
+                      <div className="absolute inset-0 blur-[2px] bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 opacity-50"></div>
+
+                      {/* Fond de l'input */}
+                      <div className="relative bg-gray-800 rounded-full">
+                        <div className="flex items-center">
+                          {/* Icône à gauche */}
+                          <div className="absolute left-3 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 flex items-center justify-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                className="w-5 h-5 text-white"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={1.5}
+                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+
+                          {/* Input text */}
+                          <input
+                            type="text"
+                            placeholder="Parle moi ici..."
+                            className="w-full py-3 pl-16 pr-4 bg-transparent text-white border-none focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </nav>
