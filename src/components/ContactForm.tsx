@@ -14,7 +14,7 @@ export default function ContactForm() {
 
   return (
     // Apply the custom .cta-section class for the gradient background
-    <section id="contact" className="cta-section py-24">
+    <section id="contact" className="cta-section py-24 px-2">
       <div className="max-w-7xl mx-auto px-6">
         <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
           {/* Left Side Content */}

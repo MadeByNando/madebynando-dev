@@ -51,7 +51,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ faqs }) => {
   }
 
   return (
-    <section id="faq" className="py-24 bg-card">
+    <section id="faq" className="py-24 bg-card px-2">
       {' '}
       {/* Use bg-card or bg-background based on design */}
       <div className="max-w-4xl mx-auto px-6">

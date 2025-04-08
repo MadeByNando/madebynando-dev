@@ -88,7 +88,7 @@ export const SidebarLayout = React.memo(
         </div>
 
         {/* Contenu principal avec marge adaptative */}
-        <main className="flex-1 overflow-auto w-full h-full pt-2 pl-2 pr-2">
+        <main className="flex-1 overflow-auto w-full h-full">
           <div
             className="transition-all duration-500 ease-in-out"
             style={{
