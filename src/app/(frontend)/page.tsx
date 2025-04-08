@@ -2,6 +2,7 @@ import React from 'react'
 import ContactForm from '@/components/ContactForm'
 import { FAQSection } from '@/components/FAQSection'
 import { AnimateOnScroll } from '@/components/AnimateOnScroll'
+import { HeroSection } from '@/ThemeComponents/organisms/HeroSection'
 
 // Import icons if using a library (example)
 // import {
@@ -95,95 +96,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="hero-gradient overflow-hidden pt-2 px-2">
-        <div className="max-w-7xl mx-auto px-6 py-24 md:py-32">
-          <div className="relative">
-            <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-              <AnimateOnScroll delay="delay-100">
-                <div className="mb-16 lg:mb-0">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-8 text-foreground">
-                    L&apos;IA au service <br />
-                    <span className="gradient-text">de votre productivité</span>
-                  </h1>
-                  <p className="text-lg text-muted-foreground mb-10 max-w-lg">
-                    Des solutions d&apos;automatisation intelligentes conçues pour les PME
-                    ambitieuses. Nous transformons vos processus métiers avec une approche
-                    pragmatique et mesurable.
-                  </p>
-                  <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a
-                      href="#contact"
-                      className="btn-primary bg-foreground hover:bg-gray-800 text-background font-medium py-3.5 px-8 rounded-full text-center"
-                    >
-                      Réservez un audit gratuit
-                    </a>
-                    <a
-                      href="#services"
-                      className="border border-foreground text-foreground hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium py-3.5 px-8 rounded-full text-center inline-flex items-center justify-center"
-                    >
-                      Nos solutions {/* <FaArrowRight className="ml-2" /> */}{' '}
-                      <span className="ml-2">➡️</span>
-                    </a>
-                  </div>
-                </div>
-              </AnimateOnScroll>
-              <AnimateOnScroll delay="delay-200">
-                <div className="relative">
-                  <div className="animate-float">
-                    {' '}
-                    {/* Apply floating animation */}
-                    <div className="relative bg-card p-8 rounded-3xl shadow-xl border border-border">
-                      <div className="flex justify-between items-center mb-8">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-blue-400 flex items-center justify-center">
-                          {' '}
-                          {/* Adjusted gradient */}
-                          {/* <FaRobot className="text-white text-xl" /> */}
-                          <span className="text-white text-xl">🤖</span>
-                        </div>
-                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                          {/* <FaUser className="text-muted-foreground text-xl" /> */}
-                          <span className="text-muted-foreground text-xl">👤</span>
-                        </div>
-                      </div>
-                      <div className="h-48 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl flex items-center justify-center mb-8">
-                        {' '}
-                        {/* Dark mode gradient adjustment */}
-                        <div className="text-center p-6">
-                          {/* <FaMagic className="text-4xl text-primary mb-4" /> */}
-                          <span className="text-4xl text-primary mb-4 block">✨</span>
-                          <h3 className="font-medium text-lg text-foreground mb-2">
-                            Synergie Humain-IA
-                          </h3>
-                          <p className="text-muted-foreground text-sm">
-                            L&apos;excellence opérationnelle par la complémentarité
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex justify-between">
-                        <div className="w-1/2 pr-2">
-                          <div className="bg-muted/50 dark:bg-muted/20 rounded-lg p-3 text-center">
-                            <p className="text-xs text-muted-foreground">Tâches automatisées</p>
-                            <p className="font-semibold text-primary">+80%</p>
-                          </div>
-                        </div>
-                        <div className="w-1/2 pl-2">
-                          <div className="bg-muted/50 dark:bg-muted/20 rounded-lg p-3 text-center">
-                            <p className="text-xs text-muted-foreground">Gain de temps</p>
-                            <p className="font-semibold text-primary">15h/semaine</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Decorative Blobs */}
-                  <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 rounded-full opacity-50 blur-3xl -z-10"></div>
-                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-accent/10 rounded-full opacity-50 blur-3xl -z-10"></div>
-                </div>
-              </AnimateOnScroll>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       <div className="section-divider"></div>
 
