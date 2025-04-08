@@ -95,7 +95,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="hero-gradient overflow-hidden">
+      <section className="hero-gradient overflow-hidden pt-2 px-2">
         <div className="max-w-7xl mx-auto px-6 py-24 md:py-32">
           <div className="relative">
             <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
@@ -188,7 +188,7 @@ export default function HomePage() {
       <div className="section-divider"></div>
 
       {/* Services Section */}
-      <section id="services" className="py-24 bg-background">
+      <section id="services" className="py-24 bg-background px-2">
         {' '}
         {/* Adjusted background */}
         <div className="max-w-7xl mx-auto px-6">
@@ -358,7 +358,7 @@ export default function HomePage() {
       <div className="section-divider"></div>
 
       {/* Why Us Section */}
-      <section className="py-24 bg-card">
+      <section className="py-24 bg-card px-2">
         {' '}
         {/* Adjusted background */}
         <div className="max-w-7xl mx-auto px-6">
@@ -503,7 +503,7 @@ export default function HomePage() {
 
       {/* Method Section */}
       {/* Add timeline-container class to parent grid for connector lines */}
-      <section id="methode" className="py-24 bg-background">
+      <section id="methode" className="py-24 bg-background px-2">
         {' '}
         {/* Adjusted background */}
         <div className="max-w-7xl mx-auto px-6">
@@ -605,8 +605,6 @@ export default function HomePage() {
       <AnimateOnScroll>
         <FAQSection faqs={faqs} />
       </AnimateOnScroll>
-
-      <div className="section-divider"></div>
 
       {/* CTA Section - Using the Client Component */}
       <AnimateOnScroll>
