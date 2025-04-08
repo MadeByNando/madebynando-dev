@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Règles de Design 
+
+- Utilise les class tailwind
+- Fais toujours en sorte que le thème clair et le thème sombre fonctionnent.
+- Chaque section du site que tu ajoutes doit avoir la class "px-2"
+- Penses à utiliser le composant : import { AnimateOnScroll } from '@/components/AnimateOnScroll' en te basant sur son utilisation dans la page d'accueil : `src › app › (frontend) › page.tsx`
+- Garde un design cohérent respectant celui de la page d'acceueil `src › app › (frontend) › page.tsx`
+
