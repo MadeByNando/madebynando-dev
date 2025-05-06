@@ -218,7 +218,7 @@ export const Sidebar = React.memo(
           <nav className="p-4 flex flex-col h-full">
             <Link href="/" className="mb-8 mt-2 px-2 flex items-center space-x-4" prefetch={true}>
               <img src="/images/logo-mbn.png" alt="Logo" className="h-10 w-10" />
-              <h1 className="text-lg text-white">Madebynando</h1>
+              <span className="font-semibold text-white hidden sm:inline">Madebynando</span>
             </Link>
 
             <ul className="space-y-1">
