@@ -276,9 +276,7 @@ export default function ServicesPage() {
             minutes, on peut souvent identifier un projet à fort potentiel. Et si vous hésitez
             encore, on vous propose un diagnostic gratuit pour vous aiguiller.
           </p>
-          <CTAButton href="/contact" icon={{ emoji: '➡️' }}>
-            Discutons de votre projet
-          </CTAButton>
+          <CTAButton href="/contact">Discutons de votre projet</CTAButton>
         </AnimateOnScroll>
       </section>
     </div>
