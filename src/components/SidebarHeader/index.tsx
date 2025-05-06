@@ -111,7 +111,7 @@ export const SidebarHeader = React.memo(
     const linkClasses = {
       desktop: {
         active: 'text-blue-400 font-medium',
-        normal: 'text-gray-300 hover:text-blue-400 transition-colors',
+        normal: 'text-gray-300 hover:text-white transition-colors',
       },
       mobile: {
         active: 'block py-1 text-blue-400 font-medium',
@@ -127,7 +127,7 @@ export const SidebarHeader = React.memo(
     return (
       <header
         ref={headerRef}
-        className={`fixed top-0 right-0 z-40 p-4 shadow-md rounded-bl-lg ${animationClass} will-change-transform will-change-opacity`}
+        className={`fixed top-0 right-0 z-40 md:py-0 p-4 shadow-md rounded-bl-lg ${animationClass} will-change-transform will-change-opacity`}
         style={{
           transformOrigin: 'right top',
           transform: isVisible && !animationClass ? 'translateX(0)' : undefined,
@@ -177,7 +177,11 @@ export const SidebarHeader = React.memo(
                     <Link
                       href={href}
                       className={
-                        isLinkActive(href) ? linkClasses.desktop.active : linkClasses.desktop.normal
+                        label === 'Me contacter'
+                          ? `btn-primary bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 !text-white block w-full h-full text-center p-4`
+                          : isLinkActive(href)
+                            ? linkClasses.desktop.active + ' py-4 block'
+                            : linkClasses.desktop.normal + ' py-4 block'
                       }
                       prefetch={true}
                     >
