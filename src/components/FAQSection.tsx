@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { cn } from '@/utilities/ui'
 // Import icons if using a library
 // import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import { CTAButton } from '@/ThemeComponents/atoms/CTAButton'
 
 interface FAQItemProps {
   question: string
@@ -78,15 +79,9 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ faqs }) => {
 
         <div className="mt-16 text-center">
           <p className="text-muted-foreground mb-6">Vous avez d&apos;autres questions ?</p>
-          <a
-            href="#contact"
-            className="btn-primary bg-foreground hover:bg-gray-800 text-background font-medium py-3.5 px-8 rounded-full inline-flex items-center"
-          >
+          <CTAButton href="#contact" icon={{ emoji: '💬' }}>
             Contactez-nous directement
-            {/* Replace with actual icon */}
-            {/* <FaComments className="ml-2" /> */}
-            <span className="ml-2">💬</span> {/* Placeholder */}
-          </a>
+          </CTAButton>
         </div>
       </div>
     </section>

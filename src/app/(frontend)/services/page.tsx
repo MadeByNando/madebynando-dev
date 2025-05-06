@@ -1,6 +1,7 @@
 import React from 'react'
 import { AnimateOnScroll } from '@/components/AnimateOnScroll'
 import Image from 'next/image'
+import { CTAButton } from '@/ThemeComponents/atoms/CTAButton'
 
 export const metadata = {
   title: 'Services | Made by Nando',
@@ -275,13 +276,9 @@ export default function ServicesPage() {
             minutes, on peut souvent identifier un projet à fort potentiel. Et si vous hésitez
             encore, on vous propose un diagnostic gratuit pour vous aiguiller.
           </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center bg-primary text-primary-foreground font-medium py-3 px-6 rounded-full hover:bg-primary/90 transition-colors"
-          >
+          <CTAButton href="/contact" icon={{ emoji: '➡️' }}>
             Discutons de votre projet
-            <span className="ml-2">➡️</span>
-          </a>
+          </CTAButton>
         </AnimateOnScroll>
       </section>
     </div>

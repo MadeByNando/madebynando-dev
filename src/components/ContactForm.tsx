@@ -109,7 +109,7 @@ export default function ContactForm() {
                 {/* Apply the custom .btn-primary class for hover effect */}
                 <button
                   type="submit"
-                  className="btn-primary w-full bg-foreground hover:bg-gray-800 text-background font-medium py-4 px-6 rounded-lg"
+                  className="btn-primary w-full bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 text-white font-medium py-4 px-6 rounded-lg transition-transform hover:scale-105"
                 >
                   Réserver mon audit gratuit
                 </button>

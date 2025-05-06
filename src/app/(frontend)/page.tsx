@@ -3,6 +3,7 @@ import ContactForm from '@/components/ContactForm'
 import { FAQSection } from '@/components/FAQSection'
 import { AnimateOnScroll } from '@/components/AnimateOnScroll'
 import { HeroSection } from '@/ThemeComponents/organisms/HeroSection'
+import { CTAButton } from '@/ThemeComponents/atoms/CTAButton'
 
 // Import icons if using a library (example)
 // import {
@@ -500,13 +501,7 @@ export default function HomePage() {
 
           <AnimateOnScroll>
             <div className="mt-16 text-center">
-              <a
-                href="#contact"
-                className="btn-primary bg-foreground hover:bg-gray-800 text-background font-medium py-3.5 px-8 rounded-full inline-flex items-center"
-              >
-                Démarrer avec l&apos;étape 1{/* <FaArrowRight className="ml-2" /> */}
-                <span className="ml-2">➡️</span>
-              </a>
+              <CTAButton href="#contact">Démarrer avec l&apos;étape 1</CTAButton>
             </div>
           </AnimateOnScroll>
         </div>

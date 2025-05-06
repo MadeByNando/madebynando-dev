@@ -5,6 +5,7 @@ import { AnimateOnScroll } from '@/components/AnimateOnScroll'
 import { Button } from '@/ThemeComponents/atoms/Button'
 import { Icon } from '@/ThemeComponents/atoms/Icon'
 import { HeroCardContent } from '@/ThemeComponents/molecules/HeroCardContent'
+import { CTAButton } from '../atoms/CTAButton'
 
 export const HeroSection = () => {
   return (
@@ -24,11 +25,13 @@ export const HeroSection = () => {
                   et mesurable.
                 </p>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                  <Button href="#contact" variant="primary">
-                    Réservez un audit gratuit
-                  </Button>
-                  <Button href="#services" variant="secondary">
-                    Nos solutions <Icon emoji="➡️" className="ml-2" />
+                  <CTAButton href="#contact">Réservez un audit gratuit</CTAButton>
+                  <Button
+                    href="#services"
+                    variant="secondary"
+                    className="bg-background text-foreground border border-border transition-transform hover:scale-105"
+                  >
+                    Nos solutions
                   </Button>
                 </div>
               </div>
