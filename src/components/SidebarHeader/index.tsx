@@ -110,12 +110,12 @@ export const SidebarHeader = React.memo(
     // Classes pour les liens
     const linkClasses = {
       desktop: {
-        active: 'text-blue-400 font-medium',
+        active: 'text-white font-medium',
         normal: 'text-gray-300 hover:text-white transition-colors',
       },
       mobile: {
-        active: 'block py-1 text-blue-400 font-medium',
-        normal: 'block py-1 text-gray-300 hover:text-blue-400 transition-colors',
+        active: 'block py-1 text-white font-medium',
+        normal: 'block py-1 text-gray-300 hover:text-white transition-colors',
       },
     }
 
