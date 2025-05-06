@@ -141,10 +141,10 @@ export const SidebarHeader = React.memo(
       >
         <div className="flex items-center justify-between">
           {/* Logo et nom */}
-          <div className="flex items-center mr-6">
+          <Link href="/" className="flex items-center mr-6" prefetch={true}>
             <img src="/images/logo-mbn.png" alt="Logo" className="h-8 w-8 mr-2" />
-            <span className="font-semibold text-white hidden sm:inline">Fernando Pinho</span>
-          </div>
+            <span className="font-semibold text-white hidden sm:inline">Madebynando</span>
+          </Link>
 
           {/* Bouton menu hamburger pour mobile */}
           <button

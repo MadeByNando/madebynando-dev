@@ -152,7 +152,7 @@ export const Sidebar = React.memo(
           {isMounted && !isOpen && (
             <button
               onClick={toggleSidebar}
-              className="fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
+              className="fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md
                       flex items-center justify-center transition-all duration-300 ease-in-out
                       left-4 top-4"
               aria-label="Ouvrir le menu"
@@ -193,7 +193,7 @@ export const Sidebar = React.memo(
           {isMounted && (
             <button
               onClick={toggleSidebar}
-              className="absolute z-10 p-2 rounded-full bg-gray-700 shadow-md 
+              className="absolute z-10 p-2 rounded-full bg-gray-700 shadow-md
                       flex items-center justify-center transition-all duration-300 ease-in-out
                       right-4 top-4"
               aria-label="Fermer le menu"
@@ -216,10 +216,10 @@ export const Sidebar = React.memo(
           )}
 
           <nav className="p-4 flex flex-col h-full">
-            <div className="mb-8 mt-2 px-2 flex items-center space-x-4">
+            <Link href="/" className="mb-8 mt-2 px-2 flex items-center space-x-4" prefetch={true}>
               <img src="/images/logo-mbn.png" alt="Logo" className="h-10 w-10" />
-              <h1 className="text-lg text-white">Fernando Pinho</h1>
-            </div>
+              <h1 className="text-lg text-white">Madebynando</h1>
+            </Link>
 
             <ul className="space-y-1">
               {NAV_LINKS.map(({ href, label, icon }) => (
@@ -264,7 +264,7 @@ export const Sidebar = React.memo(
         {isMounted && !isOpen && (
           <button
             onClick={toggleSidebar}
-            className="fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md 
+            className="fixed z-10 p-2 rounded-full bg-white dark:bg-gray-700 shadow-md
                     flex items-center justify-center transition-all duration-300 ease-in-out
                     left-4 top-4"
             aria-label="Ouvrir le menu"
